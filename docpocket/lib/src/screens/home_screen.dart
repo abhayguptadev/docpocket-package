@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as p;
-import '../services/app_provider.dart';
-import '../models/category_model.dart';
-import '../models/document_model.dart';
-import 'category_screen.dart';
+import 'package:docpocket/src/services/app_provider.dart';
+import 'package:docpocket/src/models/category_model.dart';
+import 'package:docpocket/src/models/document_model.dart';
+import 'package:docpocket/src/screens/category_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
