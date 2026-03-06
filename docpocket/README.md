@@ -30,13 +30,14 @@ dependencies:
   docpocket:
     git:
       url: https://github.com/abhayguptadev/docpocket-package.git
+      path: docpocket
 ```
 
 ---
 
 ### Setup
 
-#### 1. Permissions (Mandatory)
+#### 1. Permissions (If Permission Error)
 
 To use the camera and file picking features, add the following permissions to your project:
 
