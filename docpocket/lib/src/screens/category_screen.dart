@@ -364,7 +364,7 @@ class CategoryScreen extends StatelessWidget {
     context.read<AppProvider>().addDocument(
       categoryId: category.id,
       name: name,
-      sourceFilePath: path, // <-- Fix: Changed from filePath
+      sourceFilePath: path,
       fileSize: sizeText,
     );
   }

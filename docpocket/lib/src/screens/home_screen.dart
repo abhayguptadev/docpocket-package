@@ -12,6 +12,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // We use context.watch here but ensure the Provider is above the current route
     final provider = context.watch<AppProvider>();
     final isSearching = provider.searchQuery.isNotEmpty;
 
@@ -235,9 +236,15 @@ class HomeScreen extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        // Fix: Use ChangeNotifierProvider.value to maintain the Singleton Provider during navigation
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CategoryScreen(category: category)),
+          MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider.value(
+              value: AppProvider.instance,
+              child: CategoryScreen(category: category),
+            ),
+          ),
         );
       },
       onLongPress: () => _showCategoryActions(context, category),
