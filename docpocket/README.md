@@ -32,14 +32,6 @@ dependencies:
       url: https://github.com/abhayguptadev/docpocket-package.git
 ```
 
-### Core Dependencies
-
-This package transitively includes and relies on the following high-quality Flutter plugins:
-- **Database**: `hive`, `hive_flutter`
-- **State Management**: `provider`
-- **File & Media**: `image_picker`, `file_picker`, `open_filex`, `share_plus`
-- **Utilities**: `path_provider`, `intl`, `uuid`, `path`
-
 ---
 
 ### Setup
