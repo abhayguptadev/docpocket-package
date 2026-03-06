@@ -20,15 +20,15 @@ class DocPocketFeature {
     await DatabaseService.init();
   }
 
+  /// Entry point that guarantees the Provider is available to all internal screens.
   static Widget getEntryPoint() {
-    return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+    return ChangeNotifierProvider.value(
+      value: AppProvider.instance,
       child: const DocPocketRouter(),
     );
   }
 }
 
-/// Internal Router to handle transitions without losing the Provider
 class DocPocketRouter extends StatefulWidget {
   const DocPocketRouter({super.key});
 
@@ -56,9 +56,25 @@ class _DocPocketRouterState extends State<DocPocketRouter> {
 
   @override
   Widget build(BuildContext context) {
-    if (_showSplash) {
-      return const SplashScreen();
-    }
-    return const HomeScreen();
+    // We use a nested Navigator or a simple switch to keep the Provider in scope
+    return WillPopScope(
+      onWillPop: () async {
+        if (!_showSplash) {
+          // If we are on Home and user presses back, we might want to exit the feature
+          return true; 
+        }
+        return false;
+      },
+      child: Navigator(
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(
+            builder: (context) {
+              if (_showSplash) return const SplashScreen();
+              return const HomeScreen();
+            },
+          );
+        },
+      ),
+    );
   }
 }

@@ -6,6 +6,11 @@ import 'package:docpocket/src/database/database_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AppProvider extends ChangeNotifier {
+  // Singleton instance for the package
+  static final AppProvider instance = AppProvider._internal();
+  AppProvider._internal();
+  factory AppProvider() => instance;
+
   final Box<CategoryModel> _categoryBox = DatabaseService.getCategoriesBox();
   final Box<DocumentModel> _documentBox = DatabaseService.getDocumentsBox();
 
@@ -19,7 +24,6 @@ class AppProvider extends ChangeNotifier {
     return _documentBox.values.where((doc) => doc.categoryId == categoryId).toList();
   }
 
-  // Search
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
@@ -44,15 +48,8 @@ class AppProvider extends ChangeNotifier {
     return documents.where((d) => d.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
   }
 
-  CategoryModel? getCategoryById(String id) {
-    try {
-      return _categoryBox.get(id);
-    } catch (_) {
-      return null;
-    }
-  }
+  CategoryModel? getCategoryById(String id) => _categoryBox.get(id);
 
-  // CRUD Category
   Future<void> addCategory(String name) async {
     final category = CategoryModel(
       id: const Uuid().v4(),
@@ -72,7 +69,6 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // CRUD Document
   Future<void> addDocument({
     required String categoryId,
     required String name,
@@ -91,7 +87,8 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateDocument(DocumentModel document) async {
+  Future<void> togglePin(DocumentModel document) async {
+    document.isPinned = !document.isPinned;
     await document.save();
     notifyListeners();
   }
@@ -101,20 +98,14 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> togglePin(DocumentModel document) async {
-    document.isPinned = !document.isPinned;
+  Future<void> renameDocument(DocumentModel document, String newName) async {
+    document.name = newName;
     await document.save();
     notifyListeners();
   }
 
   Future<void> moveDocument(DocumentModel document, String newCategoryId) async {
     document.categoryId = newCategoryId;
-    await document.save();
-    notifyListeners();
-  }
-
-  Future<void> renameDocument(DocumentModel document, String newName) async {
-    document.name = newName;
     await document.save();
     notifyListeners();
   }
