@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:docpocket/src/models/category_model.dart';
 import 'package:docpocket/src/models/document_model.dart';
 import 'package:docpocket/src/database/database_service.dart';
@@ -10,7 +13,6 @@ class AppProvider extends ChangeNotifier {
   AppProvider._internal();
   factory AppProvider() => instance;
 
-  // Use Getters to ensure we always get the live opened box
   Box<CategoryModel> get _categoryBox => DatabaseService.getCategoriesBox();
   Box<DocumentModel> get _documentBox => DatabaseService.getDocumentsBox();
 
@@ -57,34 +59,55 @@ class AppProvider extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
     await _categoryBox.put(category.id, category);
-    notifyListeners(); // Now this will correctly trigger UI refresh
+    notifyListeners();
   }
 
   Future<void> deleteCategory(String id) async {
-    await _categoryBox.delete(id);
-    final docsToDelete = _documentBox.values.where((doc) => doc.categoryId == id).toList();
+    // Delete actual files first to save space
+    final docsToDelete = getDocumentsByCategory(id);
     for (var doc in docsToDelete) {
-      await _documentBox.delete(doc.id);
+      await deleteDocument(doc.id);
     }
+    await _categoryBox.delete(id);
     notifyListeners();
   }
 
+  /// Copies a file from temporary/external storage to the app's permanent storage
   Future<void> addDocument({
     required String categoryId,
     required String name,
-    required String filePath,
+    required String sourceFilePath,
     required String fileSize,
   }) async {
-    final document = DocumentModel(
-      id: const Uuid().v4(),
-      categoryId: categoryId,
-      name: name,
-      filePath: filePath,
-      fileSize: fileSize,
-      dateAdded: DateTime.now(),
-    );
-    await _documentBox.put(document.id, document);
-    notifyListeners();
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final String extension = p.extension(sourceFilePath);
+      final String fileName = "${const Uuid().v4()}$extension";
+      final String permanentPath = p.join(appDir.path, 'documents', fileName);
+
+      // Create documents directory if not exists
+      final docDir = Directory(p.dirname(permanentPath));
+      if (!await docDir.exists()) {
+        await docDir.create(recursive: true);
+      }
+
+      // Copy file to permanent storage
+      final File sourceFile = File(sourceFilePath);
+      await sourceFile.copy(permanentPath);
+
+      final document = DocumentModel(
+        id: const Uuid().v4(),
+        categoryId: categoryId,
+        name: name,
+        filePath: permanentPath, // Save the permanent path
+        fileSize: fileSize,
+        dateAdded: DateTime.now(),
+      );
+      await _documentBox.put(document.id, document);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error saving document: $e");
+    }
   }
 
   Future<void> togglePin(DocumentModel document) async {
@@ -94,7 +117,14 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> deleteDocument(String id) async {
-    await _documentBox.delete(id);
+    final doc = _documentBox.get(id);
+    if (doc != null) {
+      final file = File(doc.filePath);
+      if (await file.exists()) {
+        await file.delete(); // Remove the physical file
+      }
+      await _documentBox.delete(id);
+    }
     notifyListeners();
   }
 
