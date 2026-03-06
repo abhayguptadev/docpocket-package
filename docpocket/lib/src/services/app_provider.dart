@@ -6,13 +6,13 @@ import 'package:docpocket/src/database/database_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AppProvider extends ChangeNotifier {
-  // Singleton instance for the package
   static final AppProvider instance = AppProvider._internal();
   AppProvider._internal();
   factory AppProvider() => instance;
 
-  final Box<CategoryModel> _categoryBox = DatabaseService.getCategoriesBox();
-  final Box<DocumentModel> _documentBox = DatabaseService.getDocumentsBox();
+  // Use Getters to ensure we always get the live opened box
+  Box<CategoryModel> get _categoryBox => DatabaseService.getCategoriesBox();
+  Box<DocumentModel> get _documentBox => DatabaseService.getDocumentsBox();
 
   List<CategoryModel> get categories => _categoryBox.values.toList();
   List<DocumentModel> get documents => _documentBox.values.toList();
@@ -57,7 +57,7 @@ class AppProvider extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
     await _categoryBox.put(category.id, category);
-    notifyListeners();
+    notifyListeners(); // Now this will correctly trigger UI refresh
   }
 
   Future<void> deleteCategory(String id) async {
