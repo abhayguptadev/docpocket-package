@@ -29,32 +29,57 @@ Add `docpocket` to your `pubspec.yaml`:
 dependencies:
   docpocket:
     git:
-      url: https://github.com/abhayguptadev/docpocket.git
+      url: https://github.com/abhayguptadev/docpocket-package.git
 ```
+
+### Core Dependencies
+
+This package transitively includes and relies on the following high-quality Flutter plugins:
+- **Database**: `hive`, `hive_flutter`
+- **State Management**: `provider`
+- **File & Media**: `image_picker`, `file_picker`, `open_filex`, `share_plus`
+- **Utilities**: `path_provider`, `intl`, `uuid`, `path`
 
 ---
 
 ### Setup
 
-1. **Permissions**
+#### 1. Permissions (Mandatory)
 
-Add Camera and Storage permissions in:
+To use the camera and file picking features, add the following permissions to your project:
 
-Android → `AndroidManifest.xml`
-iOS → `Info.plist`
+**Android** (`android/app/src/main/AndroidManifest.xml`)
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.CAMERA" />
+```
+
+**iOS** (`ios/Runner/Info.plist`)
+```xml
+<key>NSCameraUsageDescription</key>
+<string>DocPocket needs camera access to scan documents.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>DocPocket needs photo library access to upload documents.</string>
+<key>NSAppleMusicUsageDescription</key>
+<string>DocPocket needs access to files.</string>
+```
 
 ---
 
-2. **Initialization**
+#### 2. Initialization
 
-Initialize the package in `main()`:
+Initialize the package in your `main()` function to set up the local database:
 
 ```dart
 import 'package:docpocket/docpocket.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DocPocketFeature.init();
+  
+  // This initializes Hive and registers all necessary adapters
+  await DocPocketFeature.init(); 
+  
   runApp(const MyApp());
 }
 ```
@@ -63,7 +88,7 @@ void main() async {
 
 ### Usage
 
-Launch the DocPocket feature from any widget:
+Launch the DocPocket feature from any widget in your app:
 
 ```dart
 onPressed: () {
@@ -78,15 +103,6 @@ onPressed: () {
 
 ---
 
-## 🛠 Tech Stack
-
-Persistence → Hive
-State Management → Provider
-File Handling → image_picker, file_picker, open_filex
-UI → Material 3
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome.
@@ -94,7 +110,6 @@ Contributions are welcome.
 If you add a new feature, fix a bug, or improve this package, please open an **Issue** or submit a **Pull Request**.
 
 If you use this package in your project, please give credit to:
-
 **Abhay Gupta (abhayguptadev)**
 
 ---
