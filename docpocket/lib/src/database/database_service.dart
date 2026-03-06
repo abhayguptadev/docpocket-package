@@ -1,8 +1,5 @@
 import 'dart:io' show Directory;
-
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/foundation.dart';
 import 'package:docpocket/src/models/category_model.dart';
 import 'package:docpocket/src/models/document_model.dart';
@@ -14,16 +11,9 @@ class DatabaseService {
 
   static Future<void> init() async {
     try {
-      final appDocumentDir = await getApplicationDocumentsDirectory();
-      final dbPath = p.join(appDocumentDir.path, 'docpocket_vault');
-      
-      // Ensure directory exists
-      final dir = Directory(dbPath);
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-      }
-
-      await Hive.initFlutter(dbPath);
+      // Senior Fix: Hive.initFlutter handles path_provider internally.
+      // Just pass the sub-directory name, NOT the full path.
+      await Hive.initFlutter('docpocket_vault');
 
       if (!Hive.isAdapterRegistered(0)) {
         Hive.registerAdapter(CategoryModelAdapter());
@@ -32,7 +22,7 @@ class DatabaseService {
         Hive.registerAdapter(DocumentModelAdapter());
       }
 
-      // Open boxes and wait for them
+      // Open boxes and wait for them to be ready
       await Hive.openBox<CategoryModel>(categoriesBoxName);
       await Hive.openBox<DocumentModel>(documentsBoxName);
       await Hive.openBox(settingsBoxName);
@@ -54,24 +44,23 @@ class DatabaseService {
         await settingsBox.put('is_seeded', true);
       }
       
-      if (kDebugMode) print("✅ DocPocket: Hive fully ready");
+      if (kDebugMode) print("✅ DocPocket: Hive fully ready and persistent");
     } catch (e) {
       if (kDebugMode) print("❌ DocPocket Hive Init Error: $e");
       rethrow;
     }
   }
 
-  // Senior Fix: Added safety check to prevent "Box not found"
   static Box<CategoryModel> getCategoriesBox() {
     if (!Hive.isBoxOpen(categoriesBoxName)) {
-      throw Exception("DocPocket Error: Categories box is not open. Did you await DocPocketFeature.init()?");
+      throw Exception("DocPocket Error: Categories box is not open.");
     }
     return Hive.box<CategoryModel>(categoriesBoxName);
   }
 
   static Box<DocumentModel> getDocumentsBox() {
     if (!Hive.isBoxOpen(documentsBoxName)) {
-      throw Exception("DocPocket Error: Documents box is not open. Did you await DocPocketFeature.init()?");
+      throw Exception("DocPocket Error: Documents box is not open.");
     }
     return Hive.box<DocumentModel>(documentsBoxName);
   }
