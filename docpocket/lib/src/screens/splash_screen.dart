@@ -35,7 +35,7 @@ class SplashScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              "Store Your Important Documents Securely",
+              "Store and access all your important documents in one place ",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

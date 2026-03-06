@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:docpocket/src/models/category_model.dart';
 import 'package:docpocket/src/models/document_model.dart';
 
@@ -8,7 +9,12 @@ class DatabaseService {
   static const String settingsBoxName = 'settingsBox';
 
   static Future<void> init() async {
-    await Hive.initFlutter();
+    // Get the application's documents directory
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    final dbPath = '${appDocumentDir.path}/docpocket_db';
+
+    // Initialize Hive in a dedicated sub-directory for the package
+    await Hive.initFlutter(dbPath);
     
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(CategoryModelAdapter());
