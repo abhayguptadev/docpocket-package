@@ -33,7 +33,6 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo Placeholder
             Container(
               width: 100,
               height: 100,
@@ -49,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             const Text(
-              "DocVault",
+              "DocPocket",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
