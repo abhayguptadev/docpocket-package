@@ -12,7 +12,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // We use context.watch here but ensure the Provider is above the current route
     final provider = context.watch<AppProvider>();
     final isSearching = provider.searchQuery.isNotEmpty;
 
@@ -32,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              onChanged: (value) => context.read<AppProvider>().updateSearchQuery(value),
+              onChanged: (value) => provider.updateSearchQuery(value),
               decoration: InputDecoration(
                 hintText: "Search documents or categories",
                 prefixIcon: const Icon(Icons.search),
@@ -236,7 +235,6 @@ class HomeScreen extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Fix: Use ChangeNotifierProvider.value to maintain the Singleton Provider during navigation
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -325,9 +323,10 @@ class HomeScreen extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
-              context.read<AppProvider>().deleteCategory(category.id);
-              Navigator.pop(context);
+            onPressed: () async {
+              // Senior Fix: Explicit Singleton access
+              await AppProvider.instance.deleteCategory(category.id);
+              if (context.mounted) Navigator.pop(context);
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
           ),
@@ -344,9 +343,10 @@ class HomeScreen extends StatelessWidget {
         return ListTile(
           leading: const Icon(Icons.star_outline, color: Colors.blue),
           title: const Text("Unpin from home"),
-          onTap: () {
-            context.read<AppProvider>().togglePin(doc);
-            Navigator.pop(context);
+          onTap: () async {
+            // Senior Fix: Explicit Singleton access
+            await AppProvider.instance.togglePin(doc);
+            if (context.mounted) Navigator.pop(context);
           },
         );
       },
@@ -359,14 +359,18 @@ class HomeScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("New Category"),
-        content: TextField(controller: controller, decoration: const InputDecoration(hintText: "Category Name")),
+        content: TextField(
+          controller: controller, 
+          autofocus: true,
+          decoration: const InputDecoration(hintText: "Category Name")
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                context.read<AppProvider>().addCategory(controller.text);
-                Navigator.pop(context);
+            onPressed: () async {
+              if (controller.text.trim().isNotEmpty) {
+                await AppProvider.instance.addCategory(controller.text.trim());
+                if (context.mounted) Navigator.pop(context);
               }
             },
             child: const Text("Save"),
