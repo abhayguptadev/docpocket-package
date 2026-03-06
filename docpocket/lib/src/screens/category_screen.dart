@@ -40,7 +40,6 @@ class CategoryScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
@@ -70,8 +69,6 @@ class CategoryScreen extends StatelessWidget {
                     },
                   ),
           ),
-
-          // Scan Button at bottom
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
@@ -367,7 +364,7 @@ class CategoryScreen extends StatelessWidget {
     context.read<AppProvider>().addDocument(
       categoryId: category.id,
       name: name,
-      filePath: path,
+      sourceFilePath: path, // <-- Fix: Changed from filePath
       fileSize: sizeText,
     );
   }
