@@ -1,7 +1,7 @@
 name: docpocket
-description: "DocVault feature package for managing and securing documents."
-version: 0.0.1
-homepage:
+description: "A production-ready Flutter document vault feature package with Hive storage, global search, and secure categorization."
+version: 1.0.0
+homepage: https://github.com/abhayguptadev/docpocket-package
 
 environment:
   sdk: ^3.11.0
@@ -30,8 +30,7 @@ dev_dependencies:
   hive_generator: ^2.0.1
   build_runner: ^2.4.9
 
-
 flutter:
   uses-material-design: true
   assets:
-    - docpocket_package/docpocket/pocket_assets/icon/
+    - assets/icon/

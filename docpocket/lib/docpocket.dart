@@ -1,30 +1,11 @@
 library docpocket;
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'database/database_service.dart';
-import 'services/app_provider.dart';
-import 'screens/splash_screen.dart';
+/// This is the main entry point for the DocPocket package.
+/// It exports only the public API that other developers should use.
 
-export 'screens/home_screen.dart';
-export 'screens/category_screen.dart';
-export 'services/app_provider.dart';
-
-class DocPocketFeature {
-  /// Initialize Hive and dependencies for the package.
-  /// Call this in your main app's main() before runApp().
-  static Future<void> init() async {
-    await DatabaseService.init();
-  }
-
-  /// Use this widget as the starting point of the DocPocket feature.
-  /// It provides the necessary [AppProvider] internally.
-  static Widget getEntryPoint() {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppProvider()),
-      ],
-      child: const SplashScreen(),
-    );
-  }
-}
+export 'src/docpocket_feature.dart';
+export 'src/models/category_model.dart';
+export 'src/models/document_model.dart';
+export 'src/services/app_provider.dart';
+export 'src/screens/home_screen.dart';
+export 'src/screens/category_screen.dart';

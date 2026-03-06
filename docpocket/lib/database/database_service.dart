@@ -8,7 +8,7 @@ class DatabaseService {
 
   static Future<void> init() async {
     await Hive.initFlutter();
-    
+
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(CategoryModelAdapter());
     }
@@ -18,7 +18,7 @@ class DatabaseService {
 
     await Hive.openBox<CategoryModel>(categoriesBoxName);
     await Hive.openBox<DocumentModel>(documentsBoxName);
-    
+
     // Default categories seeding removed as per request.
   }
 
