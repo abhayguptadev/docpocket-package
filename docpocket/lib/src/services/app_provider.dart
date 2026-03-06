@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/category_model.dart';
-import '../models/document_model.dart';
-import '../database/database_service.dart';
+import 'package:docpocket/src/models/category_model.dart';
+import 'package:docpocket/src/models/document_model.dart';
+import 'package:docpocket/src/database/database_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AppProvider extends ChangeNotifier {

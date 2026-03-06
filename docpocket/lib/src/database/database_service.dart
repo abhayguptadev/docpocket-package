@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/category_model.dart';
-import '../models/document_model.dart';
+import 'package:docpocket/src/models/category_model.dart';
+import 'package:docpocket/src/models/document_model.dart';
 
 class DatabaseService {
   static const String categoriesBoxName = 'categoriesBox';
