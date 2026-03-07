@@ -6,20 +6,23 @@ import 'package:docpocket/src/database/database_service.dart';
 import 'package:docpocket/src/services/app_provider.dart';
 import 'package:docpocket/src/screens/home_screen.dart';
 
+// Publicly exporting models and services for the host app
+export 'package:docpocket/src/models/category_model.dart';
+export 'package:docpocket/src/models/document_model.dart';
+export 'package:docpocket/src/services/app_provider.dart';
+export 'package:docpocket/src/screens/home_screen.dart';
+export 'package:docpocket/src/screens/category_screen.dart';
 
-export 'src/models/category_model.dart';
-export 'src/models/document_model.dart';
-export 'src/services/app_provider.dart';
-export 'src/screens/home_screen.dart';
-export 'src/screens/category_screen.dart';
-
+/// The main controller for the DocPocket feature package.
 class DocPocketFeature {
-  /// 1. Call this in main() before runApp()
+  /// Initializes Hive database and registers all necessary adapters.
+  /// This MUST be called in your main app's main() function and awaited.
   static Future<void> init() async {
     await DatabaseService.init();
   }
 
-  /// 2. Call this to open the feature UI
+  /// Returns the entry point widget for the DocPocket UI.
+  /// It automatically injects the necessary [AppProvider] singleton.
   static Widget getEntryPoint() {
     return ChangeNotifierProvider.value(
       value: AppProvider.instance,
