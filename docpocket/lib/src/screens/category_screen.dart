@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:open_filex/open_filex.dart';
+import 'package:provider/provider.dart';
 import 'package:docpocket/src/models/category_model.dart';
 import 'package:docpocket/src/models/document_model.dart';
 import 'package:docpocket/src/services/app_provider.dart';
@@ -16,79 +16,85 @@ class CategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>();
-    final docs = provider.filteredDocuments(category.id);
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          category.name,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 18),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        leadingWidth: 40,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black87),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              onChanged: (value) => provider.updateSearchQuery(value),
-              decoration: InputDecoration(
-                hintText: "Search in ${category.name}...",
-                prefixIcon: const Icon(Icons.search, size: 20),
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+    // We use the singleton instance directly to ensure UI updates
+    return ChangeNotifierProvider.value(
+      value: AppProvider.instance,
+      child: Consumer<AppProvider>(
+        builder: (context, provider, child) {
+          final docs = provider.filteredDocuments(category.id);
+          return Scaffold(
+            backgroundColor: Colors.grey[50],
+            appBar: AppBar(
+              title: Text(
+                category.name,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 18),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              centerTitle: false,
+              leadingWidth: 40,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: docs.isEmpty
-                ? const Center(child: Text("No documents found"))
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: docs.length,
-                    itemBuilder: (context, index) {
-                      final doc = docs[index];
-                      return _buildDocumentCard(context, doc);
-                    },
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: TextField(
+                    onChanged: (value) => provider.updateSearchQuery(value),
+                    decoration: InputDecoration(
+                      hintText: "Search in ${category.name}...",
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => _showAddDocumentBottomSheet(context),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  backgroundColor: Colors.blue[600],
-                  elevation: 0,
                 ),
-                child: const Text(
-                  "Scan Your Document",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                Expanded(
+                  child: docs.isEmpty
+                      ? const Center(child: Text("No documents found"))
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: docs.length,
+                          itemBuilder: (context, index) {
+                            final doc = docs[index];
+                            return _buildDocumentCard(context, doc);
+                          },
+                        ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton(
+                      onPressed: () => _showAddDocumentBottomSheet(context),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        backgroundColor: Colors.blue[600],
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Scan Your Document",
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -114,7 +120,7 @@ class CategoryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black26,
               blurRadius: 5,
               offset: const Offset(0, 2),
             )
@@ -159,7 +165,7 @@ class CategoryScreen extends StatelessWidget {
                 color: doc.isPinned ? Colors.amber : Colors.grey[300],
                 size: 22,
               ),
-              onPressed: () => context.read<AppProvider>().togglePin(doc),
+              onPressed: () => AppProvider.instance.togglePin(doc),
             ),
           ],
         ),
@@ -271,9 +277,9 @@ class CategoryScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.05),
+                color: color.withAlpha(2),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withOpacity(0.1)),
+                border: Border.all(color: color.withAlpha(2)),
               ),
               child: Icon(icon, color: color, size: 28),
             ),
@@ -321,6 +327,7 @@ class CategoryScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         content: TextField(
           controller: controller,
+          autofocus: true,
           decoration: const InputDecoration(
             labelText: "Document Name",
             border: OutlineInputBorder(),
@@ -335,11 +342,13 @@ class CategoryScreen extends StatelessWidget {
             child: const Text("Cancel")
           ),
           ElevatedButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                _saveDocument(context, path, controller.text);
-                Navigator.pop(context);
-                Navigator.pop(context);
+            onPressed: () async {
+              if (controller.text.trim().isNotEmpty) {
+                await _saveDocument(context, path, controller.text.trim());
+                if (context.mounted) {
+                  Navigator.pop(context); // Close Dialog
+                  Navigator.pop(context); // Close Bottom Sheet
+                }
               }
             },
             child: const Text("Save"),
@@ -349,7 +358,7 @@ class CategoryScreen extends StatelessWidget {
     );
   }
 
-  void _saveDocument(BuildContext context, String path, String name) {
+  Future<void> _saveDocument(BuildContext context, String path, String name) async {
     final file = File(path);
     final sizeInBytes = file.lengthSync();
     String sizeText;
@@ -360,8 +369,8 @@ class CategoryScreen extends StatelessWidget {
     } else {
       sizeText = "${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)} MB";
     }
-    
-    context.read<AppProvider>().addDocument(
+
+    await AppProvider.instance.addDocument(
       categoryId: category.id,
       name: name,
       sourceFilePath: path,
@@ -382,9 +391,9 @@ class CategoryScreen extends StatelessWidget {
               ListTile(
                 leading: Icon(doc.isPinned ? Icons.star : Icons.star_border, color: Colors.blue),
                 title: Text(doc.isPinned ? "Unpin from home" : "Pin to home"),
-                onTap: () {
-                  context.read<AppProvider>().togglePin(doc);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await AppProvider.instance.togglePin(doc);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -415,9 +424,9 @@ class CategoryScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: const Text("Delete document", style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  context.read<AppProvider>().deleteDocument(doc.id);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await AppProvider.instance.deleteDocument(doc.id);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
             ],
@@ -441,10 +450,10 @@ class CategoryScreen extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                context.read<AppProvider>().renameDocument(doc, controller.text);
-                Navigator.pop(context);
+            onPressed: () async {
+              if (controller.text.trim().isNotEmpty) {
+                await AppProvider.instance.renameDocument(doc, controller.text.trim());
+                if (context.mounted) Navigator.pop(context);
               }
             },
             child: const Text("Rename"),
@@ -455,7 +464,7 @@ class CategoryScreen extends StatelessWidget {
   }
 
   void _showMoveDialog(BuildContext context, DocumentModel doc) {
-    final categories = context.read<AppProvider>().categories;
+    final categories = AppProvider.instance.categories;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -472,9 +481,9 @@ class CategoryScreen extends StatelessWidget {
               return ListTile(
                 title: Text(cat.name),
                 leading: Icon(IconData(cat.iconCode)),
-                onTap: () {
-                  context.read<AppProvider>().moveDocument(doc, cat.id);
-                  Navigator.pop(context);
+                onTap: () async {
+                  await AppProvider.instance.moveDocument(doc, cat.id);
+                  if (context.mounted) Navigator.pop(context);
                 },
               );
             },

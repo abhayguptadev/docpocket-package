@@ -11,8 +11,6 @@ class DatabaseService {
 
   static Future<void> init() async {
     try {
-      // Senior Fix: Hive.initFlutter handles path_provider internally.
-      // Just pass the sub-directory name, NOT the full path.
       await Hive.initFlutter('docpocket_vault');
 
       if (!Hive.isAdapterRegistered(0)) {
