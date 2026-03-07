@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:docpocket/src/database/database_service.dart';
 import 'package:docpocket/src/services/app_provider.dart';
-import 'package:docpocket/src/screens/splash_screen.dart';
+import 'package:docpocket/src/screens/home_screen.dart';
 
 class DocPocketFeature {
   /// Initialize Hive and dependencies for the package.
@@ -18,7 +18,7 @@ class DocPocketFeature {
       providers: [
         ChangeNotifierProvider(create: (_) => AppProvider()),
       ],
-      child: const SplashScreen(),
+      child: const HomeScreen(),
     );
   }
 }
