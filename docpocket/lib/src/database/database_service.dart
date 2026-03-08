@@ -1,4 +1,3 @@
-import 'dart:io' show Directory;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:docpocket/src/models/category_model.dart';
@@ -19,17 +18,17 @@ class DatabaseService {
       if (!Hive.isAdapterRegistered(1)) {
         Hive.registerAdapter(DocumentModelAdapter());
       }
+      await Future.wait([
+        Hive.openBox(categoriesBoxName),
+        Hive.openBox(documentsBoxName),
+        Hive.openBox(settingsBoxName),
+      ]);
 
-      // Open boxes and wait for them to be ready
-      await Hive.openBox<CategoryModel>(categoriesBoxName);
-      await Hive.openBox<DocumentModel>(documentsBoxName);
-      await Hive.openBox(settingsBoxName);
-      
       final settingsBox = Hive.box(settingsBoxName);
       final bool isSeeded = settingsBox.get('is_seeded', defaultValue: false);
       
       if (!isSeeded) {
-        final categoryBox = Hive.box<CategoryModel>(categoriesBoxName);
+        final categoryBox = Hive.box(categoriesBoxName);
         if (categoryBox.isEmpty) {
           final educationCategory = CategoryModel(
             id: 'default_education',
@@ -42,23 +41,22 @@ class DatabaseService {
         await settingsBox.put('is_seeded', true);
       }
       
-      if (kDebugMode) print("✅ DocPocket: Hive fully ready and persistent");
+      if (kDebugMode) print("DocPocket: Hive boxes opened and ready");
     } catch (e) {
-      if (kDebugMode) print("❌ DocPocket Hive Init Error: $e");
+      if (kDebugMode) print("DocPocket Hive Init Error: $e");
       rethrow;
     }
   }
-
   static Box<CategoryModel> getCategoriesBox() {
     if (!Hive.isBoxOpen(categoriesBoxName)) {
-      throw Exception("DocPocket Error: Categories box is not open.");
+      return Hive.box<CategoryModel>(categoriesBoxName);
     }
     return Hive.box<CategoryModel>(categoriesBoxName);
   }
 
   static Box<DocumentModel> getDocumentsBox() {
     if (!Hive.isBoxOpen(documentsBoxName)) {
-      throw Exception("DocPocket Error: Documents box is not open.");
+      return Hive.box<DocumentModel>(documentsBoxName);
     }
     return Hive.box<DocumentModel>(documentsBoxName);
   }
