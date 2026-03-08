@@ -27,7 +27,11 @@ class CategoryScreen extends StatelessWidget {
             appBar: AppBar(
               title: Text(
                 category.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  fontSize: 18,
+                ),
               ),
               backgroundColor: Colors.white,
               elevation: 0,
@@ -80,13 +84,19 @@ class CategoryScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () => _showAddDocumentBottomSheet(context),
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         backgroundColor: Colors.blue[600],
                         elevation: 0,
                       ),
                       child: const Text(
                         "Scan Your Document",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -123,7 +133,7 @@ class CategoryScreen extends StatelessWidget {
               color: Colors.black26,
               blurRadius: 5,
               offset: const Offset(0, 2),
-            )
+            ),
           ],
         ),
         child: Row(
@@ -147,7 +157,10 @@ class CategoryScreen extends StatelessWidget {
                 children: [
                   Text(
                     doc.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -199,7 +212,20 @@ class CategoryScreen extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     return "${months[date.month - 1]} ${date.day.toString().padLeft(2, '0')}, ${date.year}";
   }
 
@@ -240,9 +266,27 @@ class CategoryScreen extends StatelessWidget {
                     spacing: 20,
                     runSpacing: 20,
                     children: [
-                      _buildActionIcon(context, Icons.camera_alt_outlined, "Camera", Colors.blue, _pickFromCamera),
-                      _buildActionIcon(context, Icons.image_outlined, "Gallery", Colors.purple, _pickFromGallery),
-                      _buildActionIcon(context, Icons.folder_open_outlined, "File Manager", Colors.green, _pickFromFile),
+                      _buildActionIcon(
+                        context,
+                        Icons.camera_alt_outlined,
+                        "Camera",
+                        Colors.blue,
+                        _pickFromCamera,
+                      ),
+                      _buildActionIcon(
+                        context,
+                        Icons.image_outlined,
+                        "Gallery",
+                        Colors.purple,
+                        _pickFromGallery,
+                      ),
+                      _buildActionIcon(
+                        context,
+                        Icons.folder_open_outlined,
+                        "File Manager",
+                        Colors.green,
+                        _pickFromFile,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -253,9 +297,17 @@ class CategoryScreen extends StatelessWidget {
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: Colors.grey[100],
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text("Cancel", style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -267,7 +319,13 @@ class CategoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionIcon(BuildContext context, IconData icon, String label, Color color, Function(BuildContext) onTap) {
+  Widget _buildActionIcon(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color color,
+    Function(BuildContext) onTap,
+  ) {
     return InkWell(
       onTap: () => onTap(context),
       child: SizedBox(
@@ -287,7 +345,11 @@ class CategoryScreen extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
             ),
           ],
         ),
@@ -299,7 +361,8 @@ class CategoryScreen extends StatelessWidget {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      if (context.mounted) _showInitialRenameDialog(context, image.path, image.name);
+      if (context.mounted)
+        _showInitialRenameDialog(context, image.path, image.name);
     }
   }
 
@@ -307,18 +370,28 @@ class CategoryScreen extends StatelessWidget {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      if (context.mounted) _showInitialRenameDialog(context, image.path, image.name);
+      if (context.mounted)
+        _showInitialRenameDialog(context, image.path, image.name);
     }
   }
 
   Future<void> _pickFromFile(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.single.path != null) {
-      if (context.mounted) _showInitialRenameDialog(context, result.files.single.path!, result.files.single.name);
+      if (context.mounted)
+        _showInitialRenameDialog(
+          context,
+          result.files.single.path!,
+          result.files.single.name,
+        );
     }
   }
 
-  void _showInitialRenameDialog(BuildContext context, String path, String defaultName) {
+  void _showInitialRenameDialog(
+    BuildContext context,
+    String path,
+    String defaultName,
+  ) {
     final controller = TextEditingController(text: defaultName);
     showDialog(
       context: context,
@@ -338,8 +411,8 @@ class CategoryScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
-            }, 
-            child: const Text("Cancel")
+            },
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -358,7 +431,11 @@ class CategoryScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _saveDocument(BuildContext context, String path, String name) async {
+  Future<void> _saveDocument(
+    BuildContext context,
+    String path,
+    String name,
+  ) async {
     final file = File(path);
     final sizeInBytes = file.lengthSync();
     String sizeText;
@@ -381,7 +458,9 @@ class CategoryScreen extends StatelessWidget {
   void _showDocumentActions(BuildContext context, DocumentModel doc) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -389,7 +468,10 @@ class CategoryScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(doc.isPinned ? Icons.star : Icons.star_border, color: Colors.blue),
+                leading: Icon(
+                  doc.isPinned ? Icons.star : Icons.star_border,
+                  color: Colors.blue,
+                ),
                 title: Text(doc.isPinned ? "Unpin from home" : "Pin to home"),
                 onTap: () async {
                   await AppProvider.instance.togglePin(doc);
@@ -405,7 +487,10 @@ class CategoryScreen extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.drive_file_move_outlined, color: Colors.blue),
+                leading: const Icon(
+                  Icons.drive_file_move_outlined,
+                  color: Colors.blue,
+                ),
                 title: const Text("Move to another category"),
                 onTap: () {
                   Navigator.pop(context);
@@ -423,7 +508,10 @@ class CategoryScreen extends StatelessWidget {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text("Delete document", style: TextStyle(color: Colors.red)),
+                title: const Text(
+                  "Delete document",
+                  style: TextStyle(color: Colors.red),
+                ),
                 onTap: () async {
                   await AppProvider.instance.deleteDocument(doc.id);
                   if (context.mounted) Navigator.pop(context);
@@ -448,11 +536,17 @@ class CategoryScreen extends StatelessWidget {
           decoration: const InputDecoration(border: OutlineInputBorder()),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (controller.text.trim().isNotEmpty) {
-                await AppProvider.instance.renameDocument(doc, controller.text.trim());
+                await AppProvider.instance.renameDocument(
+                  doc,
+                  controller.text.trim(),
+                );
                 if (context.mounted) Navigator.pop(context);
               }
             },
